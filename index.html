@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Text-to-Speech Generator</title>
-    <!-- Include QR Code library via CDN -->
+    <title>QR Audio Player (English Only)</title>
+    <!-- Fallback CDN that works well both locally and online -->
     <script src="qrcode.min.js"></script>
     <style>
         body {
@@ -27,118 +27,64 @@
             text-align: center;
         }
         h1 { font-size: 24px; color: #1f2937; margin-bottom: 20px; }
-        .form-group {
-            text-align: left;
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: #4b5563;
-            margin-bottom: 5px;
-        }
-        input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 15px;
-            box-sizing: border-box;
-        }
-        .range-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .btn {
-            width: 100%;
-            padding: 14px;
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-            background-color: #2563eb;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background-color 0.2s;
-        }
-        .btn:hover { background-color: #1d4ed8; }
-        .btn-secondary {
-            background-color: #10b981;
-            margin-top: 15px;
-        }
-        .btn-secondary:hover { background-color: #059669; }
-        #qr-result-box {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 2px dashed #e5e7eb;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-        }
-        #qrcode {
-            padding: 10px;
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
+        .form-group { text-align: left; margin-bottom: 15px; }
+        label { display: block; font-size: 14px; font-weight: 600; color: #4b5563; margin-bottom: 5px; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 15px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 16px; font-size: 20px; font-weight: bold; color: white; background-color: #2563eb; border: none; border-radius: 12px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2); }
+        .btn:active { transform: scale(0.98); }
+        .btn-secondary { background-color: #10b981; margin-top: 15px; font-size: 16px; padding: 12px; border-radius: 8px; }
+        #qr-result-box { margin-top: 25px; padding-top: 20px; border-top: 2px dashed #e5e7eb; display: none; flex-direction: column; align-items: center; }
+        #qrcode { padding: 10px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 10px; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1 id="page-title">🔊 QR Audio Player</h1>
+    <h1 id="page-title">🔊 QR English Audio</h1>
 
-    <!-- SECTION 1: SCANNER MODE (Shows up when someone scans the code) -->
+    <!-- PLAYER MODE: Seen by the mobile user after scanning QR -->
     <div id="player-mode" class="hidden">
-        <button class="btn" id="playBtn">🔊 Tap to Listen</button>
+        <button class="btn" id="playBtn">🔊 Tap to Listen (English)</button>
         <div class="form-group" style="margin-top: 20px;">
-            <label>Message Content:</label>
+            <label>Message:</label>
             <p id="displayText" style="background:#f9fafb; padding:15px; border-radius:8px; margin:0; text-align:left; color:#374151; font-size:16px; line-height:1.5;"></p>
         </div>
-        <button class="btn btn-secondary" onclick="window.location.search = ''">Create Your Own QR Code</button>
+        <button class="btn btn-secondary" onclick="window.location.search = ''">Create New QR Code</button>
     </div>
 
-    <!-- SECTION 2: GENERATOR MODE (Shows up normally to create codes) -->
+    <!-- GENERATOR MODE: Used by you to create the QR codes -->
     <div id="generator-mode">
         <div class="form-group">
             <label for="textInput">Your Message</label>
-            <textarea id="textInput" rows="3" placeholder="Enter the text you want the QR code to read aloud..."></textarea>
+            <textarea id="textInput" rows="3" placeholder="Enter English text..."></textarea>
         </div>
 
         <div class="form-group">
-            <label for="voiceSelect">Target Voice/Language</label>
-            <select id="voiceSelect"><option value="">Loading system voices...</option></select>
+            <label for="voiceSelect">Select English Voice Accent</label>
+            <select id="voiceSelect"><option value="">Loading English voices...</option></select>
         </div>
 
         <div class="form-group">
             <label for="paceInput">Speech Pace: <span id="paceVal">1.0</span>x</label>
-            <div class="range-container">
-                <input type="range" id="paceInput" min="0.5" max="2" step="0.1" value="1.0">
-            </div>
+            <input type="range" id="paceInput" min="0.5" max="1.8" step="0.1" value="1.0">
         </div>
 
-        <button class="btn" id="testBtn">🔊 Test Audio Sound</button>
+        <button class="btn" style="font-size:16px; padding:12px; border-radius:8px;" id="testBtn">🔊 Test Sound</button>
         <button class="btn btn-secondary" id="generateBtn">🛠️ Generate QR Code</button>
 
-        <!-- QR Code Output Block -->
         <div id="qr-result-box">
-            <label style="text-align: center; margin-bottom: 10px;">Your Printable QR Code:</label>
+            <label>Your QR Code:</label>
             <div id="qrcode"></div>
-            <p style="font-size: 12px; color: #6b7280; margin: 5px 0 15px 0;">Right-click the QR code image above to save or copy it.</p>
+            <p style="font-size: 12px; color: #6b7280; margin: 5px 0;">Right-click or long-press to save image.</p>
         </div>
     </div>
 </div>
 
 <script>
     const synth = window.speechSynthesis;
-    let voices = [];
+    let englishVoices = [];
 
-    // Elements
     const generatorMode = document.getElementById('generator-mode');
     const playerMode = document.getElementById('player-mode');
     const voiceSelect = document.getElementById('voiceSelect');
@@ -149,98 +95,100 @@
     const qrcodeContainer = document.getElementById('qrcode');
     const qrResultBox = document.getElementById('qr-result-box');
 
-    // 1. POPULATE SUPPORTED SYSTEM VOICES
-    function populateVoiceList() {
+    // 1. FILTER SYSTEM VOICES TO ONLY ENGLISH
+    function loadEnglishVoices() {
         if (typeof synth === 'undefined') return;
-        voices = synth.getVoices();
         
-        // Clear placeholder
+        // Grab all system voices and filter specifically for language codes starting with 'en'
+        const allVoices = synth.getVoices();
+        englishVoices = allVoices.filter(voice => voice.lang.toLowerCase().startsWith('en'));
+
+        // Fallback: If mobile browser hasn't loaded voices yet, keep native list array but don't break
+        if (englishVoices.length === 0 && allVoices.length > 0) {
+            englishVoices = allVoices; 
+        }
+
         voiceSelect.innerHTML = '';
-        
-        voices.forEach((voice, index) => {
+        englishVoices.forEach((voice, index) => {
             const option = document.createElement('option');
+            // Clean up the name for readability (e.g., "Google US English")
             option.textContent = `${voice.name} (${voice.lang})`;
             option.value = index;
-            // Default to English or the system primary standard
-            if (voice.default) option.selected = true;
+            // Prefer US or GB names as defaults if present
+            if (voice.lang.includes('US') || voice.default) option.selected = true;
             voiceSelect.appendChild(option);
         });
     }
 
-    populateVoiceList();
+    // Execute immediately and attach to the voice-changed event handler for mobile browsers
+    loadEnglishVoices();
     if (synth.onvoiceschanged !== undefined) {
-        synth.onvoiceschanged = populateVoiceList;
+        synth.onvoiceschanged = loadEnglishVoices;
     }
 
-    // Update range visual value
     paceInput.addEventListener('input', () => paceVal.textContent = paceInput.value);
 
-    // 2. CHECK MODE ON PAGE LOAD (Read Query String Parameters)
+    // 2. PARSE QUERY STRINGS FOR MOBILE SCANNER PLAYER
     const urlParams = new URLSearchParams(window.location.search);
     const paramText = urlParams.get('text');
-    const paramVoiceIndex = urlParams.get('voice');
+    const paramVoiceURI = urlParams.get('vURI'); // Use stable unique voice URI instead of changing index numbers
     const paramPace = urlParams.get('pace');
 
     if (paramText !== null) {
-        // Switch layout to Receiver/Player mode
         generatorMode.classList.add('hidden');
         playerMode.classList.remove('hidden');
-        document.getElementById('page-title').textContent = "🔊 Scan Successful!";
         displayText.textContent = decodeURIComponent(paramText);
 
-        // Audio trigger setup for scanner user
         document.getElementById('playBtn').addEventListener('click', () => {
-            synth.cancel(); // Reset engine
-            const utterance = new SpeechSynthesisUtterance(paramText);
+            synth.cancel(); 
+            const utterance = new SpeechSynthesisUtterance(decodeURIComponent(paramText));
             
-            // Re-fetch system voices to make sure index maps correctly on current phone/device
-            const deviceVoices = synth.getVoices();
-            if (paramVoiceIndex && deviceVoices[paramVoiceIndex]) {
-                utterance.voice = deviceVoices[paramVoiceIndex];
-            }
-            if (paramPace) {
-                utterance.rate = parseFloat(paramPace);
-            }
+            // Critical Mobile Trick: Re-evaluate voices strictly inside the click event 
+            const activeVoices = synth.getVoices();
+            const matchingVoice = activeVoices.find(v => v.voiceURI === paramVoiceURI) || activeVoices.find(v => v.lang.startsWith('en'));
+            
+            if (matchingVoice) utterance.voice = matchingVoice;
+            if (paramPace) utterance.rate = parseFloat(paramPace);
+            
             synth.speak(utterance);
         });
     }
 
-    // 3. GENERATOR ACTIONS (Testing Audio locally)
+    // 3. GENERATOR CODE
     document.getElementById('testBtn').addEventListener('click', () => {
-        if (!textInput.value.trim()) return alert("Please enter text to test.");
+        if (!textInput.value.trim()) return alert("Please type some text.");
         synth.cancel();
         const utterance = new SpeechSynthesisUtterance(textInput.value);
-        if (voiceSelect.value) utterance.voice = voices[voiceSelect.value];
+        const selectedVoice = englishVoices[voiceSelect.value];
+        if (selectedVoice) utterance.voice = selectedVoice;
         utterance.rate = parseFloat(paceInput.value);
         synth.speak(utterance);
     });
 
-    // 4. GENERATOR ACTIONS (Creating the QR Code URL Link)
     document.getElementById('generateBtn').addEventListener('click', () => {
         const text = textInput.value.trim();
-        if (!text) return alert("Please type a message first.");
+        if (!text) return alert("Please enter text.");
 
-        // Clear previous QR Code if any
         qrcodeContainer.innerHTML = "";
-
-        // Build target payload URL pointing right back to this hosted file location
         const baseUrl = window.location.origin + window.location.pathname;
-        const targetUrl = `${baseUrl}?text=${encodeURIComponent(text)}&voice=${voiceSelect.value}&pace=${paceInput.value}`;
+        const selectedVoice = englishVoices[voiceSelect.value];
+        const voiceIdentifier = selectedVoice ? encodeURIComponent(selectedVoice.voiceURI) : '';
 
-        // Create the QR Code Graphic using the library
+        // Generate the URL query parameters
+        const targetUrl = `${baseUrl}?text=${encodeURIComponent(text)}&vURI=${voiceIdentifier}&pace=${paceInput.value}`;
+
         new QRCode(qrcodeContainer, {
             text: targetUrl,
-            width: 200,
-            height: 200,
+            width: 220,
+            height: 220,
             colorDark: "#000000",
             colorLight: "#ffffff",
-            correctLevel: QRCode.CorrectLevel.H
+            correctLevel: QRCode.CorrectLevel.M
         });
 
         qrResultBox.style.display = "flex";
         qrResultBox.scrollIntoView({ behavior: 'smooth' });
     });
 </script>
-
 </body>
 </html>
